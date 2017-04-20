@@ -44,11 +44,21 @@ public class BackGroundTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected String doInBackground(String... params) {
-        String reg_url="http://192.168.0.3/android_connect/add_mother.php";
-        String login_url="http://192.168.0.3/android_connect/login_mo.php";
-        String add_new_worker_url="http://192.168.0.3/android_connect/add_new_worker.php";
-        String delete_worker_url="http://192.168.0.3/android_connect/delete_worker.php";
-        String update_worker_url="http://192.168.0.3/android_connect/update_worker.php ";
+//        String reg_url="http://192.168.0.3/android_connect/add_mother.php";
+//        String login_url="http://192.168.0.3/android_connect/login_mo.php";
+//        String add_new_worker_url="http://192.168.0.3/android_connect/add_new_worker.php";
+//        String delete_worker_url="http://192.168.0.3/android_connect/delete_worker.php";
+//        String update_worker_url="http://192.168.0.3/android_connect/update_worker.php ";
+
+        String IP="http://192.168.2.20";
+        String add_new_mother_url=IP+"/android_connect/add_mother.php";
+        String reg_url=IP+"/android_connect/add_mother.php";
+        String login_url=IP+"/android_connect/login_mo.php";
+        String add_new_worker_url=IP+"/android_connect/add_new_worker.php";
+        String delete_worker_url=IP+"/android_connect/delete_worker.php";
+        String update_worker_url=IP+"/android_connect/update_worker.php ";
+
+
         String method=params[0];
         if(method.equals("Register"))
         {
@@ -254,6 +264,60 @@ public class BackGroundTask extends AsyncTask<String,Void,String> {
                 e.printStackTrace();
             }
         }
+        else if(method.equals("addnewMother"))
+        {
+            String NewMotherUser=params[1];
+            String NewMotherPass=params[2];
+            String NewMotherName=params[3];
+            String NewMotherDelivered=params[5];
+            String NewMotherNoOfBabies=params[4];
+            String NewMotherDOB=params[7];
+            String NewMotherPreg=params[6];
+
+
+            try {
+                URL url = new URL(add_new_mother_url);
+                HttpURLConnection httpURLConnection= (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream OS=httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter=new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
+                String data= URLEncoder.encode("NewMotherUser","UTF-8")+"="+URLEncoder.encode(NewMotherUser,"UTF-8")+"&"+
+                             URLEncoder.encode("NewMotherPass","UTF-8")+"="+URLEncoder.encode(NewMotherPass,"UTF-8")+"&"+
+                             URLEncoder.encode("NewMotherName","UTF-8")+"="+URLEncoder.encode(NewMotherName,"UTF-8")+"&"+
+                             URLEncoder.encode("NewMotherDelivered","UTF-8")+"="+URLEncoder.encode(NewMotherDelivered,"UTF-8")+"&"+
+                             URLEncoder.encode("NewMotherNoOfBabies","UTF-8")+"="+URLEncoder.encode(NewMotherNoOfBabies,"UTF-8")+"&"+
+                             URLEncoder.encode("NewMotherDOB","UTF-8")+"="+URLEncoder.encode(NewMotherDOB,"UTF-8")+"&"+
+                             URLEncoder.encode("NewMotherPrag","UTF-8")+"="+URLEncoder.encode(NewMotherPreg,"UTF-8");
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+                //getting response from the server
+                InputStream inputStream=httpURLConnection.getInputStream();
+                BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                String response="";
+                String line="";
+                while ((line=bufferedReader.readLine())!=null)
+                {
+                    response+=line;
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                return response;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
@@ -298,6 +362,17 @@ public class BackGroundTask extends AsyncTask<String,Void,String> {
             alertDialog.setTitle("worker does not exist");
             alertDialog.setMessage("worker with this user name does not exist, cant be updated");
             alertDialog.show();
+        }
+        else if(result.equals(("already_exist_m").trim()))
+        {
+            alertDialog.setTitle("mother already exist");
+            alertDialog.setMessage("mother with this user name already exist");
+            alertDialog.show();
+        }
+        else if(result.equals(("new_mother_added").trim()))
+        {
+            Toast.makeText(c,"mother added sucessfully",Toast.LENGTH_SHORT).show();
+            c.startActivity(new Intent(c,worker.class));
         }
         else{
             String s=result.trim();

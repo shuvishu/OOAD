@@ -25,7 +25,5 @@ public class Login extends AppCompatActivity {
         BackGroundTask backGroundTask=new BackGroundTask(this);
         backGroundTask.execute(method,mname,mid);
     }
-    public void reg_act(View view){
-        startActivity(new Intent(Login.this,register.class));
-    }
+
 }
